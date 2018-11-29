@@ -66,22 +66,18 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation)const
 bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation)const
 {
 	FHitResult HitResult;
-	
+
 	auto StartLocation = PlayerCameraManager->GetCameraLocation();
 	auto EndLocation = StartLocation + (LookDirection * LineTraceRange);
 	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(GetControlledTank());
-	if (GetWorld()->LineTraceSingleByChannel(
-			HitResult,
-			StartLocation,
-			EndLocation,
-			ECollisionChannel::ECC_Visibility,
-			CollisionParams)
-		)
+	CollisionParams.AddIgnoredActor(GetPawn());
+
+	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Visibility, CollisionParams))
 	{
 		HitLocation = HitResult.Location;
 		return true;
 	}
+
 	HitLocation = FVector(0);
 	return false;
 }
