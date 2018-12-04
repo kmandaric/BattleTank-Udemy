@@ -1,5 +1,5 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-
+#include "Tank.h"
 #include "TankPlayerController.h"
 #include "Engine/World.h"
 #include "BattleTank.h"
@@ -42,6 +42,11 @@ void ATankPlayerController::AimTowardsCrosshair()
 		GetControlledTank()->AimAt(HitLocation);
 	  // TODO tell controlled tank to aim at this point
 	}
+	else
+	{
+		auto Time = GetWorld()->GetTimeSeconds();
+		UE_LOG(LogTemp, Warning, TEXT("%f: No aim solve found."), Time);
+	}
 	
 }
 
@@ -71,12 +76,21 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVec
 	FCollisionQueryParams CollisionParams;
 	CollisionParams.AddIgnoredActor(GetPawn());
 
-	if (GetWorld()->LineTraceSingleByChannel(HitResult, StartLocation, EndLocation, ECollisionChannel::ECC_Visibility, CollisionParams))
+	if (GetWorld()->LineTraceSingleByChannel(
+		HitResult,
+		StartLocation,
+		EndLocation,
+		ECollisionChannel::ECC_Visibility,
+		CollisionParams))
 	{
 		HitLocation = HitResult.Location;
 		return true;
 	}
-
+	/*else
+	{
+		auto Time = GetWorld()->GetTimeSeconds();
+		UE_LOG(LogTemp, Warning, TEXT("%f: No aim solve found."), Time);
+	}*/
 	HitLocation = FVector(0);
 	return false;
 }
