@@ -42,18 +42,13 @@ void ATankPlayerController::AimTowardsCrosshair()
 		GetControlledTank()->AimAt(HitLocation);
 	  // TODO tell controlled tank to aim at this point
 	}
-	else
-	{
-		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: No aim solve found."), Time);
-	}
 	
 }
 
 //Get world location if linetrace through crosshair, true if hits landscape
-bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation)const
+bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation) const
 {
-	// Find the crosshair position
+	// Find the crosshair position in pixel coordinates
 	int32 ViewportSizeX, ViewportSizeY;
 	GetViewportSize(ViewportSizeX, ViewportSizeY);
 	auto ScreenLocation = FVector2D(ViewportSizeX * CrosshairXLocation, ViewportSizeY * CrosshairYLocation);
@@ -62,38 +57,35 @@ bool ATankPlayerController::GetSightRayHitLocation(FVector& HitLocation)const
 	FVector LookDirection;
 	if (GetLookDirection(ScreenLocation, LookDirection))
 	{
-		GetLookVectorHitLocation(LookDirection, HitLocation);
+		// Line-trace along that LookDirection, and see what we hit (up to max range)
+		return GetLookVectorHitLocation(LookDirection, HitLocation);
 	}
-	return true;
+	return false;
 }
 
-bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation)const
+bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVector& HitLocation) const
 {
 	FHitResult HitResult;
-
 	auto StartLocation = PlayerCameraManager->GetCameraLocation();
 	auto EndLocation = StartLocation + (LookDirection * LineTraceRange);
-	FCollisionQueryParams CollisionParams;
-	CollisionParams.AddIgnoredActor(GetPawn());
-
 	if (GetWorld()->LineTraceSingleByChannel(
 		HitResult,
 		StartLocation,
 		EndLocation,
-		ECollisionChannel::ECC_Visibility,
-		CollisionParams))
+		ECollisionChannel::ECC_Camera)
+		)
 	{
 		HitLocation = HitResult.Location;
 		return true;
 	}
-	/*else
+	else
 	{
-		auto Time = GetWorld()->GetTimeSeconds();
-		UE_LOG(LogTemp, Warning, TEXT("%f: No aim solve found."), Time);
-	}*/
+		UE_LOG(LogTemp, Warning, TEXT("Hehe"));
+	}
 	HitLocation = FVector(0);
-	return false;
+	return false; // Line trace didn't succeed
 }
+
 
 bool ATankPlayerController::GetLookDirection(FVector2D ScreenLocation, FVector& LookDirection)const
 {
