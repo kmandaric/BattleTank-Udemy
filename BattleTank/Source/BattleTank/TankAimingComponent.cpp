@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
-#include "Engine/World.h"
 #include "TankAimingComponent.h"
+#include "TankTurret.h"
+#include "Engine/World.h"
 #include "TankBarrel.h"
 #include "kismet/GamePlayStatics.h"
 
@@ -45,10 +46,6 @@ void  UTankAimingComponent::AimAt(FVector HitLocation, float LaunchSpeed)
 		auto Time = GetWorld()->GetTimeSeconds();
 		UE_LOG(LogTemp, Warning, TEXT("%f: Aim solution found."), Time);
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Hehe"));
-	}
 }
 
 void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
@@ -63,5 +60,12 @@ void UTankAimingComponent::MoveBarrelTowards(FVector AimDirection)
 
 void UTankAimingComponent::SetBarrelReference(UTankBarrel* BarrelToSet)
 {
+	if (!BarrelToSet){return;}
 	Barrel = BarrelToSet;
+}
+
+void UTankAimingComponent::SetTurretReference(UTankTurret* TurretToSet)
+{
+	if (!TurretToSet) { return; }
+	Turret = TurretToSet;
 }
