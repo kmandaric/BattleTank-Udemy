@@ -78,10 +78,6 @@ bool ATankPlayerController::GetLookVectorHitLocation(FVector LookDirection, FVec
 		HitLocation = HitResult.Location;
 		return true;
 	}
-	else
-	{
-		UE_LOG(LogTemp, Warning, TEXT("No aim solution found."));
-	}
 	HitLocation = FVector(0);
 	return false; // Line trace didn't succeed
 }
