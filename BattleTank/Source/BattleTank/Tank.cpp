@@ -40,7 +40,7 @@ void ATank::AimAt(FVector HitLocation)
 
 void ATank::Fire()
 {
-	bool isReloaded = (FPlatformTime::Seconds() - LastFireTime) > ReloadTimeInSeconds;
+	bool isReloaded = (GetWorld()->GetTimeSeconds() - LastFireTime) > ReloadTimeInSeconds;
 	if (Barrel && isReloaded) 
 	{ 
 		//spawn a projectile on the socket location
@@ -51,7 +51,7 @@ void ATank::Fire()
 			);
 
 		Projectile->LaunchProjectile(LaunchSpeed);
-		LastFireTime = FPlatformTime::Seconds();
+		LastFireTime = GetWorld()->GetTimeSeconds();
 	}
 }
 
